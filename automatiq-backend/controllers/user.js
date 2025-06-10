@@ -1,12 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
-import { inngest } from "../inngest/client";
+import { inngest } from "../inngest/client.js";
 
 export const signup = async (req, res) => {
   const { email, password, skills = [] } = req.body;
   try {
-    const hashedpass = bcrypt.hash(password, 10);
+    const hashedpass = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashedpass, skills });
 
     await inngest.send({
