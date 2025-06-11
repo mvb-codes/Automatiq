@@ -52,3 +52,5 @@ export default tseslint.config({
   },
 })
 ```
+
+some test comment here.
