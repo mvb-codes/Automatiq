@@ -2,7 +2,8 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { AuthProvider, useAuth } from "./auth";
+import { useAuthStore } from "./stores/auth.tsx";
+import ToastContainer from "./components/ToastContainer.tsx";
 
 const router = createRouter({
   routeTree,
@@ -18,8 +19,13 @@ declare module "@tanstack/react-router" {
 }
 
 function InnerApp() {
-  const auth = useAuth();
-  return <RouterProvider router={router} context={{ auth }} />;
+  const auth = useAuthStore();
+  return (
+    <>
+      <RouterProvider router={router} context={{ auth }} />;
+      <ToastContainer />
+    </>
+  );
 }
 
 const rootElement = document.getElementById("root")!;
@@ -27,9 +33,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <AuthProvider>
-        <InnerApp />
-      </AuthProvider>
+      <InnerApp />
     </StrictMode>,
   );
 }

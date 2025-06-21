@@ -9,12 +9,12 @@ export const signup = async (req, res) => {
     const hashedpass = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashedpass, skills });
 
-    await inngest.send({
-      name: "user/signup",
-      data: {
-        email,
-      },
-    });
+    // await inngest.send({
+    //   name: "user/signup",
+    //   data: {
+    //     email,
+    //   },
+    // });
 
     const token = jwt.sign(
       { _id: user._id, role: user.role },
@@ -103,5 +103,26 @@ export const getUser = async (req, res) => {
     return res.json(users);
   } catch (error) {
     if (err) return res.status(500).json({ error: "Fetching Failed." });
+  }
+};
+
+export const updateSkills = async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    const { skills } = req.body;
+    const userSkills = await User.findById(user_id);
+    const newSkills = skills.filter(
+      (skill) => !userSkills.skills.includes(skill),
+    );
+    const updatedSkills = [...userSkills.skills, ...newSkills];
+
+    await User.findByIdAndUpdate(user_id, { skills: updatedSkills });
+
+    return res
+      .status(200)
+      .json({ message: "User skills updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Failed to update skills" });
   }
 };
